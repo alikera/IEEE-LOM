@@ -1,0 +1,263 @@
+
+Color Processing
+Definition of Color
+Physical aspects
+color is a part of magnetic spectrum of visible light.
+Perceptual aspects
+amount made up by varying R, G and B colors.
+cone cells in human eyes detecting color (one for each R, G and B color)
+R, G, B = primary color
+Primary and Secondary Colors
+Primary colors: the color consist of 1 primary color
+Secondary colors: the color consist of 2 primary colors
+Primary and Secondary Colors (2)
+two color models
+Light Color Primaries (Red, Green, Blue)
+Pigment Color Primaries (Cyan, Magenta, Yellow)  (CMYK
+)
+Color Model
+A.k.a. color space, color system
+Specify a color as a point in some standard coordinate
+Popular color models:
+RGB
+ color models
+HSV
+ color models
+YIQ
+ color models (NTSC standard)
+LUV and LAB color models
+RGB
+ Color Model
+Cartesian coordinate system
+Stand for RED, GREEN and BLUE color
+Pixel Depth
+Pixel depth: #bit represented RGB image
+E.g. 24-bit RGB color image: 8-bit for each color. Able to represent (2
+8
+)
+3
+ color
+Full-color image = 24-bit RGB color image
+R.C. Gonzalez and R.E. Woods, “Digital Image Processing”, 2
+nd
+ Ed., Prentice Hall, 2002.
+Safe 
+RGB
+ Colors
+A.k.a all-system-safe colors, safe Web colors, safe browser color
+Set of the color that are likely to be reproduced color independent of the hardware
+Set of 216 colors (the other 40 are reproduced differently by various systems)
+Safe Color Diagram and Cube
+Color only on the surface of the cube
+HSV
+(
+HSI
+) Color Model
+H
+ue: true color attribute
+S
+aturation: amount that the color is diluted by white 
+pure red 
+
+ high saturation
+light red 
+ 
+low saturation
+V
+alue: degree of brightness
+HSV Color Space
+HSV 
+ RGB
+ 
+HSV: MATLAB Command
+RGB
+ 
+ 
+HSV
+MATLAB:
+ 
+rgb2hsv
+(
+Red, Green, Blue
+);
+HSV
+RGB
+MATLAB: 
+hsv2rgb
+(
+Hue, Saturation, Value
+);
+Converting HSV to RGB in 
+opencv
+if
+ source 
+==
+ 
+'RGB'
+ 
+and
+ 
+dest
+ 
+==
+ 
+'HSV'
+:
+ 
+	
+img
+ 
+=
+ cv2
+.
+cvtColor
+(
+img
+,
+ cv2
+.
+COLOR_RGB2HSV
+)
+ 
+elif
+ source 
+==
+ 
+'HSV'
+ 
+and
+ 
+dest
+ 
+==
+ 
+'RGB'
+:
+ 
+	
+img
+ 
+=
+ cv2
+.
+cvtColor
+(
+img
+,
+ cv2
+.
+COLOR_HSV2RGB
+)
+ 
+return
+ 
+img
+ 
+RGB Image VS HSV Image
+RGB Image
+Hue Image
+Saturation Image
+(white : low)
+Value Image
+YIQ Color Space
+Y : luminance, brightness
+I, Q: chrominance (color information)
+RGB
+ Image VS 
+YIQ
+ Image
+RGB Image
+Y Image
+I Image
+Q Image
+Computer Structure
+3-dimensional matrix: 
+[
+row
+, 
+column
+, 
+color space
+]
+Contrast Enhancement
+Use histogram manipulation (E.g. histogram equalization) on only 
+intensity
+ 
+component.
+Processing on 
+RGB
+ matrix leads to color distortion.
+Histogram Equalization on 
+RGB
+BEFORE
+AFTER
+Spatial Filtering
+Blurring: any are fine
+average filter on 
+RGB
+ components
+average filter on intensity(Y) components
+High-pass filter (E.g. 
+unsharp
+)
+process on intensity components
+General: work on intensity components
+Smoothed Lena
+Noise Reduction
+Depended on where noise is generated.
+generated in 
+RGB
+ spaces: reduce noise in 
+RGB
+ matrix
+generated in brightness space: reduce noise in intensity (Y) components
+Edge Detection
+Use edge detection on intensity component only
+Use edge detection on R, G and B components separately and join the result
+Rods and Cons
+Humans normally have 
+three types of cones
+ 
+The first responds the most to light of long                                      wavelengths, peaking at about 560 nm ; this type is sometimes designated 
+L
+ for long. 
+The second type responds the most to light of medium-wavelength, peaking at 530 nm, and is abbreviated 
+M
+ for medium. 
+The third type responds the most to short-wavelength light, peaking at 420 nm, and is designated 
+S
+ for short. 
+The three types have peak wavelengths near 564–580 nm, 534–545 nm, and 420–440 nm, respectively, depending on the individual.
+The difference in the signals received from the three cone types allows the brain to perceive a continuous range of colors
+Cone Details
+Current understanding is that the 
+6 to 7 million cones 
+can be divided into "red" cones (64%), "green" cones (32%), and "blue" cones (2%) based on measured 
+response curves
+. 
+The green and red cones are concentrated in the 
+fovea centralis
+ . 
+The "blue" cones have the highest sensitivity and are mostly found outside the fovea, leading to some distinctions in the eye's 
+blue perception
+.
+The cones are less sensitive to light than the 
+rods
+, as shown a typical 
+day-night comparison
+. The daylight vision (cone vision) adapts much more rapidly to changing light levels, adjusting to a change like coming indoors out of sunlight in a few seconds. 
+Rod Details
+The 
+rods
+ are the most numerous of the 
+photoreceptors
+, some 
+120 million
+, and are the more sensitive than the 
+cones
+. However, they are not sensitive to color. They are responsible for our dark-adapted, or 
+scotopic
+, vision. The rods are incredibly efficient photoreceptors. More than one thousand times as sensitive as the cones, they can reportedly be triggered by individual 
+photons
+ under optimal conditions. 
+The optimum dark-adapted vision is obtained only after a considerable period of darkness, say 30 minutes or longer, because the rod adaption process is much slower than that of the cones.

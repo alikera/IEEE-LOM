@@ -1,0 +1,369 @@
+
+CS 188: Artificial Intelligence
+Adversarial Search
+[These slides were created by Dan Klein and Pieter Abbeel for CS188 Intro to AI at UC Berkeley (
+ai.berkeley.edu
+).]
+Adversarial Games
+Many different kinds of games!
+Axes:
+Deterministic or stochastic?
+One, two, or more players?
+Zero sum?
+Perfect information (can you see the state)?
+Want algorithms for calculating a 
+strategy (policy)
+ which recommends a move from each state
+Types of Games
+Deterministic Games
+Many possible formalizations, one is:
+States: S (start at s
+0
+)
+Players: P={1...N} (usually take turns)
+Actions: A (may depend on player / state)
+Transition Function: 
+SxA
+ 
+ S
+Terminal Test: S  {
+t,f
+}
+Terminal Utilities: 
+SxP
+  R
+Solution for a player is a 
+policy
+: S  A
+Zero-Sum Games
+Zero-Sum Games
+Agents have opposite utilities (values on outcomes)
+Lets us think of a single value that one maximizes and the other minimizes
+Adversarial, pure competition
+General Games
+Agents have independent utilities (values on outcomes)
+Cooperation, indifference, competition, and more are all possible
+More later on non-zero-sum games
+Adversarial Search
+Single-Agent Trees
+8
+2
+0
+2
+6
+4
+6
+…
+…
+Value of a State
+Non-Terminal States:
+Terminal States:
+Value of a state: The best achievable outcome (utility) from that state
+Adversarial Game Trees
+-20
+-8
+-18
+-5
+-10
++4
+…
+…
+-20
++8
+Minimax
+ Values
+States Under Agent’s Control:
+Terminal States:
+States Under Opponent’s Control:
+Tic-
+Tac
+-Toe Game Tree
+Adversarial Search (
+Minimax
+)
+Deterministic, zero-sum games:
+Tic-tac-toe, chess, checkers
+One player maximizes result
+The other minimizes result
+Minimax
+ search:
+A state-space search tree
+Players alternate turns
+Compute each node’s 
+minimax
+ value: 
+the best achievable utility against a rational (optimal) adversary
+8
+2
+5
+6
+max
+min
+5
+Minimax
+ Implementation
+def min-value(state):
+	
+if Terminal-Test(state) 
+		return UTILITY(state) 
+initialize v = 
++
+∞
+for each successor of state:
+v = min(v, 
+max-value(successor)
+)
+return v
+def max-value(state):
+if Terminal-Test(state) 
+	return UTILITY(state) 
+initialize v = 
+-∞
+for each successor of state:
+v = max(v, 
+min-value(successor)
+)
+return v
+Minimax Example
+3
+3
+2
+2
+3
+Minimax Properties
+Optimal against a perfect player.  Otherwise?
+10
+10
+9
+100
+max
+min
+[Demo: min 
+vs
+ 
+exp
+ (L6D2, L6D3)]
+Video of Demo Min vs. 
+Exp
+ (Min)
+Video of Demo Min vs. 
+Exp
+ (
+Exp
+)
+Minimax
+ Efficiency
+How efficient is 
+minimax
+?
+Just like (exhaustive) DFS
+Time: O(
+b
+m
+)
+Space: O(
+bm
+)
+Example: For 
+chess, b 
+ 35, m  100
+Exact solution is completely infeasible
+But, do we need to explore the whole tree?
+Resource Limits
+Game Tree Pruning
+Minimax Example
+3
+Minimax
+ Pruning
+3
+Alpha-Beta Pruning
+General configuration (MIN version)
+We’re computing the MIN-VALUE at some node 
+n
+We’re looping over 
+n
+’s
+ children
+n
+’s
+ estimate of the 
+childrens
+’ min is dropping
+Who cares about 
+n
+’s
+ value?  MAX
+Let 
+a
+ be the best value that MAX can get at any choice point along the current path from the root
+If 
+n
+ becomes worse than 
+a
+, MAX will avoid it, so we can stop considering 
+n
+’s
+ other children (it’s already bad enough that it won’t be played)
+MAX version is symmetric
+MAX
+MIN
+MAX
+MIN
+a
+n
+Alpha-Beta Implementation
+def min-value(state
+ , 
+α
+, 
+β
+):
+initialize v = 
++
+∞
+for each successor of state:
+v = min(v, 
+value(successor
+, 
+α
+, 
+β
+)
+)
+if v ≤ 
+α
+ return v
+β 
+= min(
+β
+, v)
+return v
+def max-value(state, 
+α
+, 
+β
+):
+initialize v = 
+-∞
+for each successor of state:
+v = 
+max(v, 
+value(successor
+, 
+α
+, 
+β
+)
+)
+if
+ v ≥ 
+β
+ return v
+α
+ = max(
+α
+, v)
+return v
+α
+: 
+MAX’s best option on path to root
+β
+:
+ 
+MIN’s best option on path to root
+Alpha-Beta Pruning Properties
+This pruning has 
+no effect
+ on 
+minimax
+ value computed for the root!
+Values of intermediate nodes might be wrong
+Important: children of the root may have the wrong value
+So the most naïve version won’t let you do action selection
+Good child ordering improves effectiveness of pruning
+With “perfect ordering”:
+Time complexity 
+drops 
+Doubles solvable depth!
+Full search of, e.g. chess, is still hopeless…
+10
+10
+0
+max
+min
+Alpha-Beta Quiz
+Alpha-Beta Quiz 2
+Resource Limits
+Resource Limits
+Problem: In realistic games, cannot search to leaves!
+Solution: Depth-limited search
+Instead, search only to a limited depth in the tree
+Replace terminal utilities with an evaluation function for non-terminal positions
+Example:
+Suppose we have 100 seconds, can explore 10K nodes / sec
+So can check 1M nodes per move
+- reaches about depth 8 – decent chess program
+Guarantee of optimal play is gone
+Use iterative deepening for an anytime algorithm
+?
+?
+?
+?
+-1
+-2
+4
+9
+4
+min
+max
+-2
+4
+Evaluation Functions
+Evaluation Functions
+Evaluation functions score non-terminals in depth-limited search
+Ideal function: returns the actual 
+minimax
+ value of the position
+In practice: typically weighted linear sum of features:
+e.g.  
+f
+1
+(
+s
+) = (num white queens – num black queens)
+, etc.
+Evaluation for Pacman
+[Demo: thrashing d=2, thrashing d=2 (fixed evaluation function), smart ghosts coordinate (L6D6,7,8,10)]
+Video of Demo Smart Ghosts (Coordination)
+Video of Demo Smart Ghosts (Coordination) – Zoomed In
+Depth Matters
+Evaluation functions are always imperfect
+The deeper in the tree the evaluation function is buried, the less the quality of the evaluation function matters
+An important example of the tradeoff between complexity of features and complexity of computation
+[Demo: depth limited (L6D4, L6D5)]
+Video of Demo Limited Depth (2)
+Video of Demo Limited Depth (10)
+Video of Demo Thrashing (d=2)
+[Demo: thrashing d=2, thrashing d=2 (fixed evaluation function) (L6D6)]
+Why Pacman Starves
+A danger of 
+replanning
+ agents!
+He knows his score will go up by eating the dot now (west, east)
+He knows his score will go up just as much by eating the dot later (east, west)
+There are no point-scoring opportunities after eating the dot (within the horizon, two here)
+Therefore, waiting seems just as good as eating: he may go east, then back west in the next round of 
+replanning
+!
+Video of Demo Thrashing -- Fixed (d=2)
+[Demo: thrashing d=2, thrashing d=2 (fixed evaluation function) (L6D7)]
+Synergies between Evaluation Function and Alpha-Beta?
+Alpha-Beta: amount of pruning depends on expansion ordering
+Evaluation function can provide guidance to expand most promising nodes first (which later makes it more likely there is already a good alternative on the path to the root)
+(somewhat similar to role of A* heuristic,  CSPs filtering)
+Alpha-Beta:  (similar for roles of min-max swapped)
+Value at a min-node will only keep going down
+Once value of min-node lower than better option for max along path to root, can prune
+Hence: IF evaluation function provides upper-bound on value at min-node, and upper-bound already lower than better option for max along path to root 
+THEN can prune
+Next Time: Uncertainty!

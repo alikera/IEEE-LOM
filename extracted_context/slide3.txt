@@ -1,0 +1,221 @@
+
+CS 188: Artificial Intelligence
+Perceptrons
+ and Logistic Regression
+Pieter Abbeel & Dan Klein
+University of California, Berkeley
+Linear Classifiers
+Feature Vectors
+Hello,
+Do you want free printr cartriges?  Why pay more when you can get them ABSOLUTELY FREE!  Just
+# free      : 2
+YOUR_NAME   : 0
+MISSPELLED  : 2
+FROM_FRIEND : 0
+...
+SPAM
+or
+HAM
+PIXEL-7,12  : 1
+PIXEL-7,13  : 0
+...
+NUM_LOOPS   : 1
+...
+“2”
+Some (Simplified) Biology
+Very loose inspiration: human neurons
+Linear Classifiers
+Inputs are 
+feature values
+Each feature has a 
+weight
+Sum is the 
+activation
+If the activation is:
+Positive, output +1
+Negative, output -1
+
+f
+1
+f
+2
+f
+3
+w
+1
+w
+2
+w
+3
+>0?
+Weights
+Binary case: compare features to a weight vector
+Learning: figure out the weight vector from examples
+# free      : 2
+YOUR_NAME   : 0
+MISSPELLED  : 2
+FROM_FRIEND : 0
+...
+# free      : 4
+YOUR_NAME   :-1
+MISSPELLED  : 1
+FROM_FRIEND :-3
+...
+# free      : 0
+YOUR_NAME   : 1
+MISSPELLED  : 1
+FROM_FRIEND : 1
+...
+Dot product            positive means the positive class
+Decision Rules
+Binary Decision Rule
+In the space of feature vectors
+Examples are points
+The equation 
+f.w
+=0
+ defines a 
+hyperplane
+One side corresponds to Y=+1
+Other corresponds to Y=-1
+BIAS  : -3
+free  :  4
+money :  2
+...
+0
+1
+0
+1
+2
+free
+money
++1 = SPAM
+-1 = HAM
+Weight Updates
+Learning: Binary Perceptron
+Start with weights = 0
+For each training instance:
+Classify with current weights
+If correct (i.e., y=y*), no change!
+If wrong: adjust the weight vector
+Learning: Binary Perceptron
+Start with weights = 0
+For each training instance:
+Classify with current weights
+If correct (i.e., y=y*), no change!
+If wrong: adjust the weight vector by adding or subtracting the feature vector. Subtract if y* is -1.
+Examples: Perceptron
+Separable Case
+Multiclass Decision Rule
+If we have multiple classes:
+A weight vector for each class:
+Score (activation) of a class y:
+Prediction highest score wins
+Binary = multiclass where the negative class has weight zero
+Learning: Multiclass Perceptron
+Start with all weights = 0
+Pick up training examples one by one
+Predict with current weights
+If correct, no change!
+If wrong: lower score of wrong answer, raise score of right answer
+Example: Multiclass Perceptron
+BIAS  : 1
+win   : 0
+game  : 0 
+vote  : 0 
+the   : 0  
+...
+BIAS  : 0  
+win   : 0 
+game  : 0 
+vote  : 0 
+the   : 0  
+...
+BIAS  : 0 
+win   : 0 
+game  : 0 
+vote  : 0 
+the   : 0  
+...
+“win the vote”
+“win the election”
+“win the game”
+Properties of Perceptrons
+Separability
+: true if some parameters get the training set perfectly correct
+Convergence: if the training is separable, 
+perceptron
+ will eventually converge (binary case)
+Separable
+Non-Separable
+Problems with the Perceptron
+Noise: if the data isn’t separable, weights might thrash
+Averaging weight vectors over time can help (averaged perceptron)
+Mediocre generalization: finds a “barely” separating solution
+Overtraining: test / held-out accuracy usually rises, then falls
+Overtraining is a kind of overfitting
+Improving the 
+Perceptron
+Non-Separable Case: Deterministic Decision
+Even the best linear boundary makes at least one mistake
+Non-Separable Case: Probabilistic Decision
+0.5
+ | 
+0.5
+0.3 
+| 
+0.7
+0.1 
+| 
+0.9
+0.7 
+| 
+0.3
+0.9 
+| 
+0.1
+How to get probabilistic decisions?
+Perceptron scoring:
+If 			        very positive 
+ 
+want probability going to 1
+If  			        very negative 
+ want probability going to 0
+Sigmoid function
+Best w? 
+Maximum likelihood estimation:
+with:
+= Logistic Regression
+Separable Case: Deterministic Decision – Many Options
+Separable Case: Probabilistic Decision – Clear Preference
+0.5
+ | 
+0.5
+0.3
+ | 
+0.7
+0.7
+ | 
+0.3
+0.5
+ | 
+0.5
+0.3
+ | 
+0.7
+0.7
+ | 
+0.3
+Multiclass Logistic Regression
+Recall Perceptron:
+A weight vector for each class:
+Score (activation) of a class y:
+Prediction highest score wins
+How to make the scores into probabilities? 
+original activations
+softmax
+ activations
+Best w? 
+Maximum likelihood estimation:
+with:
+= Multi-Class Logistic Regression

@@ -1,0 +1,36 @@
+
+Easy Quiz Game
+in PowerPoint
+Start Quiz
+The font used is Poppins. You can download the font-pack
+ for quality viewing.
+WRONG ANSWER
+Retry
+1. Type your question here!
+Incorrect Answer
+Incorrect Answer
+Correct Answer
+Incorrect Answer
+CORRECT ANSWER
+Next
+2. Type your question here!
+Incorrect Answer
+Incorrect Answer
+Correct Answer
+Incorrect Answer
+CORRECT ANSWER
+Next
+3. Type your question here!
+Incorrect Answer
+Incorrect Answer
+Correct Answer
+Incorrect Answer
+CORRECT ANSWER
+Next
+4. Type your question here!
+Incorrect Answer
+Incorrect Answer
+Correct Answer
+Incorrect Answer
+CORRECT ANSWER
+End Show
