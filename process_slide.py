@@ -1,20 +1,14 @@
-import json
+from process_all import *
 import os
 import zipfile
-import imghdr
 import shutil
 import collections 
 import collections.abc
 from pptx import Presentation
 import pptx
-import filetype
 import statistics
 import spacy
 
-import nltk
-from nltk.corpus import wordnet
-from nltk.stem import WordNetLemmatizer
-import string
 import textstat
 # https://pypi.org/project/textstat/
 # https://py-readability-metrics.readthedocs.io/en/latest/
@@ -27,7 +21,7 @@ from spacy.language import Language
 from spacy_langdetect import LanguageDetector
 
 
-def insert_slide_initial_metadata(lom, resource_type, interactivity):
+def insert_initial_metadata(lom, resource_type, interactivity):
     lom['learningResourceType'] = resource_type
     lom['interactivityType'] = interactivity
 
@@ -125,58 +119,6 @@ def process_slide_interactivity_level_tag(lom, slide):
     count = count_interactions_in_slide(slide)
     insert_interactivity_level(lom, count + 1)
 
-
-def calculate_unique_words_density(text):
-    # Initialize lemmatizer
-    lemmatizer = WordNetLemmatizer()
-
-    text_without_punctuations = text.translate(str.maketrans("", "", string.punctuation))
-
-    # Tokenize the text into words
-    words = nltk.word_tokenize(text_without_punctuations)
-
-    # Remove stopwords
-    stopwords = nltk.corpus.stopwords.words('english')
-    words = [word for word in words if word.lower() not in stopwords]
-
-    # Lemmatize the words
-    lemmatized_words = []
-    for word in words:
-        # Get the part of speech (pos) tag for the word
-        pos_tag = nltk.pos_tag([word])[0][1][0].lower()
-        
-        # Map the pos tag to the WordNet pos tags
-        if pos_tag == 'j':
-            pos_tag = wordnet.ADJ
-        elif pos_tag == 'v':
-            pos_tag = wordnet.VERB
-        elif pos_tag == 'n':
-            pos_tag = wordnet.NOUN
-        elif pos_tag == 'r':
-            pos_tag = wordnet.ADV
-        else:
-            pos_tag = None
-        
-        if pos_tag:
-            # Lemmatize the word using the WordNet pos tag
-            lemma = lemmatizer.lemmatize(word, pos=pos_tag)
-        else:
-            lemma = lemmatizer.lemmatize(word)
-            
-        lemmatized_words.append(lemma)
-
-    # Remove duplicates
-    unique_words = list(set(lemmatized_words))
-    num_unique_words = len(unique_words)
-    num_words = len(lemmatized_words)
-    if num_words == 0:
-        return None
-    semantic_density = num_unique_words / num_words
-    # Print the unique words after lemmatization and removing duplicates
-    return semantic_density
-    # print(semantic_density)
-
-
 def calculate_slide_semantic_density(curr_slide):
     slide_text = ""
     each_slide_text = ""
@@ -197,18 +139,10 @@ def calculate_slide_semantic_density(curr_slide):
         each_slide_text = ""
     
     each_slide_density = (statistics.median(densities) +statistics.mean(densities))/2
-    semantic_density = (calculate_unique_words_density(slide_text) + each_slide_density )/2
-
-    if(semantic_density <= 0.5):
-        return 1
-    if(semantic_density > 0.5 and semantic_density <= 0.6):
-        return 2
-    if(semantic_density > 0.6 and semantic_density <= 0.7):
-        return 3
-    if(semantic_density > 0.7 and semantic_density <= 0.8):
-        return 4
-    if(semantic_density > 0.8):
-        return 5
+    # semantic_density = (calculate_unique_words_density(slide_text) + each_slide_density )/2
+    semantic_density = calculate_unique_words_density(slide_text)
+    return get_semantic_density_level(semantic_density)
+    
 
     # print(calculate_unique_words_density(slide_text))
     # print(statistics.median(densities))
@@ -250,7 +184,7 @@ def process_slide_intended_end_user_role_tag(lom, slide):
     lom['intendedEndUserRole'] = 'learner'
 
 def process_slide_context_tag(lom, slide):
-    age = calculate_age_range(slide)
+    age = calculate_slide_age_range(slide)
     if(age+1 >= 18):
         lom['context'] = 'higher education'
     elif(age+1 < 18):
@@ -278,16 +212,7 @@ def calculate_slide_difficulty(curr_slide):
     text = extract_text_from_slide(ppt)
     linsear_score = textstat.linsear_write_formula(text)
     # Print the text and the readability scores
-    if(linsear_score < 5):
-        return 1
-    if(linsear_score >= 5 and linsear_score < 10):
-        return 2
-    if(linsear_score >= 10 and linsear_score < 15):
-        return 3
-    if(linsear_score >= 15 and linsear_score < 20):
-        return 4
-    if(linsear_score >= 20):
-        return 5
+    return get_difficulty_level(linsear_score)
 
 
 def process_slide_difficulty_tag(lom, slide):
@@ -302,21 +227,16 @@ def calculate_slide_age_estimation(curr_slide):
     return (textstat.text_standard(text, float_output=True) + textstat.linsear_write_formula(text))/2
 
 
-def calculate_age_range(slide):
+def calculate_slide_age_range(slide):
     age_estimated = calculate_slide_age_estimation(slide)
     difficulty = calculate_slide_difficulty(slide)
-    age_mid = int((age_estimated + difficulty)/2)
+    # age_mid = int((age_estimated + difficulty)/2)
+    age_mid = round(age_estimated)
+    return age_mid + 7
 
-    return age_mid + 9
 def process_slide_typical_age_range_tag(lom, slide):
-    age = calculate_age_range(slide)
+    age = calculate_slide_age_range(slide)
     lom['typicalAgeRange'] = str(age-1) + "-" + str(age+1)
-
-
-def convert_seconds(seconds):
-    hours, remainder = divmod(seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    return hours, minutes, seconds
 
 
 def calculate_slide_learning_time(lom, curr_slide):
@@ -330,7 +250,7 @@ def calculate_slide_learning_time(lom, curr_slide):
     
     char_read_time = (((300 / lom['difficulty'])) / 60) * 5
     reading_time = textstat.reading_time(text, ms_per_char=1000/char_read_time)
-    print(1000/char_read_time,reading_time)
+    # print(1000/char_read_time,reading_time)
     hours, minutes, seconds = convert_seconds(reading_time)
 
     return "PT" + str(int(hours)) + "H" + str(int(minutes)) + "M" + str(int(seconds)) + "S"
@@ -338,35 +258,20 @@ def calculate_slide_learning_time(lom, curr_slide):
 
 def process_slide_typical_learning_time(lom, slide):
     reading_time = calculate_slide_learning_time(lom, slide)
-    print(reading_time)
-
     lom['typicalLearningTime'] = reading_time
 
 
 def process_slide_description_tag(lom, slide):
     lom['description'] = ""
 
-def get_lang_detector(nlp, name):
-    return LanguageDetector()
-
-def detect_language_text(curr_slide):
+def detect_slide_language(curr_slide):
     ppt = pptx.Presentation("assets/"+curr_slide)
     text = extract_text_from_slide(ppt)
-
-    nlp = spacy.load("en_core_web_sm")
-    Language.factory("language_detector", func=get_lang_detector)
-    nlp.add_pipe('language_detector', last=True)
-    doc = nlp(text)
-
-    detect_language = doc._.language #4
-
-    return detect_language['language']
+    return detect_text_language(text)
 
 def process_slide_language_tag(lom, slide):
-    language = detect_language_text(slide)
-    print(language)
+    language = detect_slide_language(slide)
     lom['language'] = language
-
 
 def copy_assets():
     init_dir = os.getcwd()

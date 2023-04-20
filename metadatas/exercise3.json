@@ -1,13 +1,13 @@
 {
-    "learningResourceType": "slide",
-    "interactivityType": "Expositive",
+    "learningResourceType": "exercise",
+    "interactivityType": "active",
     "interactivityLevel": 2,
     "semanticDensity": 3,
     "intendedEndUserRole": "learner",
     "context": "higher education",
-    "typicalAgeRange": "20-22",
+    "typicalAgeRange": "16-18",
     "difficulty": 3,
-    "typicalLearningTime": "PT0H22M50S",
+    "typicalLearningTime": "PT0H46M12S",
     "description": "",
     "language": "en"
 }
